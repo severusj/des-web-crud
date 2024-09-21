@@ -146,11 +146,27 @@
         .btn-time-adjust button:hover {
             background-color: #0056b3;
         }
+        .weather-icon {
+            font-size: 4rem;
+            color: #007bff;
+        }
+        .weather-data {
+            font-size: 1.2rem;
+            color: #333;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="title">Geek Universe</h1>
+    <div class="weather-container">
+    <div class="weather-icon" style="text-align:center">
+        <i class="fas fa-cloud"></i>
+        <div class="weather-data" id="weather-info">
+    </div>
+    <br>
+</div>
+</div>
     <a href="<?= site_url('estaciones/create'); ?>" class="btn-add">
         <i class="fas fa-plus"></i>
     </a>
@@ -251,7 +267,7 @@
 </div>
 
 <audio id="alert-sound" src="<?= base_url('public/alert.mp3'); ?>" preload="auto"></audio>
-
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -270,7 +286,30 @@
         var alertSound = document.getElementById("alert-sound");
         alertSound.play();
     }
+        // Funcion para obtener el clima
+        function obtenerClima() {
+        const apiKey = 'acb3d53b2c9efa7f3e7b5b5c2197502f';
+        const ciudad = 'Guatemala';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${apiKey}&units=metric&lang=es`;
 
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const temperatura = data.main.temp;
+                const descripcion = data.weather[0].description;
+                document.getElementById('weather-info').innerHTML = `Clima en Ciudad de ${ciudad}: ${descripcion.charAt(0).toUpperCase() + descripcion.slice(1)} - ${temperatura}°C
+                `;
+            })
+            .catch(error => {
+                document.getElementById('weather-info').innerHTML = 'No se pudo obtener el clima.';
+                console.error('Error:', error);
+            });
+    }
+
+    // Llamar a la función al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        obtenerClima();
+    });
     let timers = {};
     function adjustTime(estacionId, minutes) {
     const timeElement = document.querySelector('#tiempo-solicitado-' + estacionId);
